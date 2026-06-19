@@ -13,6 +13,7 @@ if [[ $1 =~ ^[0-9]+$ ]]; then
 fi
 
 # Set the env variables
+echo "Setting all variables from: '$1' as environment variables."
 set -a
 . $1
 set +a
