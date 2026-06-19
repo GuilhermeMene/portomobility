@@ -7,7 +7,9 @@ import requests
 
 # Set the output parameters
 TYPE = "Here"
-OUTPUT_DIR = f"../Data/{TYPE}"
+OUTPUT_DIR = os.environ.get("PATH_DIR")
+print(OUTPUT_DIR)
+# OUTPUT_DIR = f"../Data/{TYPE}"
 # Coordinates
 LAT = 41.1668695
 LONG = -8.618076
@@ -16,6 +18,7 @@ R = 10000
 try:
     # Get the env variables
     key = os.environ.get("HERE_KEY")
+    print(key)
     URL = f"https://data.traffic.hereapi.com/v7/flow?in=circle:{LAT},{LONG};r={R}&locationReferencing=olr&apiKey={key}"
 
     # Get response
