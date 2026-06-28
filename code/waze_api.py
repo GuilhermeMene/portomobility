@@ -16,12 +16,13 @@ MAP_URL = [
     "https://www.waze.com/pt-BR/live-map/directions?to=ll.41.1994523%2C-8.6441803&from=ll.41.10703657%2C-8.62358093&utm_medium=lm_share_directions&utm_campaign=default&utm_source=waze_website",
 ]
 
+TYPE = "Waze"
 
-INTERVAL = 60  # 1 minute
-OUTPUT_DIR = "../Data/Waze"
-USER_DATA_DIR = "./browser_profile"
 
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+# Set the output path
+def set_output_path(output_path):
+    global OUTPUT_DIR
+    OUTPUT_DIR = output_path
 
 
 def handle_response(response):
@@ -32,7 +33,7 @@ def handle_response(response):
             if response.status == 200:
                 json_data = response.json()
                 timestamp = int(time.time())
-                filename = os.path.join(OUTPUT_DIR, f"waze_{timestamp}.json")
+                filename = os.path.join(OUTPUT_DIR, TYPE, f"{TYPE}_{timestamp}.json")
 
                 with open(filename, "w", encoding="utf-8") as f:
                     json.dump(json_data, f, indent=4, ensure_ascii=False)
@@ -45,23 +46,23 @@ def handle_response(response):
                 )
                 lg.log(
                     type="Waze",
-                    logtext=f"ERROR: Error getting the reponse code: {response.status}",
+                    logtext=f"{time.time()} - ERROR: Error getting the reponse code: {response.status}",
                 )
         except Exception as e:
             print(f"Failed to read response stream: {e}")
             lg.log(
                 type="Waze",
-                logtext=f"ERROR: Error getting the reponse code: {response.status}",
+                logtext=f"{time.time()} - ERROR: Error getting the reponse code: {response.status}",
             )
 
 
-def fetch_waze_data():
+def fetch_waze_data(user_data):
     with sync_playwright() as p:
         print("Launching a browser instance...")
 
         # A persistent context retains session state and avoids leaking raw driver traits
         context = p.chromium.launch_persistent_context(
-            user_data_dir=USER_DATA_DIR,
+            user_data_dir=user_data,
             headless=False,  # Headful mode is required initially to pass anti-bot device tests
             args=["--disable-blink-features=AutomationControlled", "--no-sandbox"],
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -88,23 +89,3 @@ def fetch_waze_data():
         print(
             "\n Active Monitoring Loop engaged. Press Ctrl+C to terminate.\n" + "=" * 50
         )
-
-        """try:
-            while True:
-                time.sleep(INTERVAL)
-                current_time = time.strftime("%Y-%m-%d %H:%M:%S")
-                print(
-                    f"[{current_time}] Refreshing map viewport to force a fresh data sync..."
-                )
-
-                # Reloading the visual page mimics
-                page.reload(wait_until="networkidle", timeout=45000)
-
-        except KeyboardInterrupt:
-            print("\nMonitoring session closed gracefully by user command.")
-        finally:
-            context.close()"""
-
-
-if __name__ == "__main__":
-    fetch_waze_data()
