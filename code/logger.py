@@ -10,7 +10,7 @@ def log(type: str, logtext: str):
     logtext = logtext.encode().decode("utf-8")
 
     try:
-        filedir = os.environ.get("PATH_DIR")
+        filedir = os.environ.get("DATA_LOG_PATH")
         filepath = os.path.join(filedir, f"Log_{type}")
 
         with open(filepath, "a") as logfile:
