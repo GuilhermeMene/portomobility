@@ -45,7 +45,7 @@ def handle_response(response):
                     f"Intercepted API call but server returned status: {response.status}"
                 )
                 lg.log(
-                    type="Waze",
+                    type=TYPE,
                     logtext=f"{time.time()} - ERROR: Error getting the reponse code: {response.status}",
                 )
         except Exception as e:
