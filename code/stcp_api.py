@@ -26,7 +26,7 @@ def fetch_stcp_data(output_path):
                 json.dump(json_data, f, indent=4, ensure_ascii=False)
 
         print(f"Successfully saved active payload to: {filename}")
-        lg.log(type="Here", logtext=f"{time.time()} - SUCESS: {filename}")
+        lg.log(type=TYPE, logtext=f"{time.time()} - SUCESS: {filename}")
 
     except Exception as e:
         print(
