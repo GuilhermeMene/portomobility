@@ -31,7 +31,6 @@ def fetch_here_data(output_path, here_key, amount_file):
         print(response)
         if response.status_code == 200:
             json_data = response.json()
-            print(json_data)
             with open(filename, "w", encoding="utf-8") as f:
                 json.dump(json_data, f, indent=4, ensure_ascii=False)
 
@@ -39,7 +38,7 @@ def fetch_here_data(output_path, here_key, amount_file):
         fh.set_amount(amount_file=amount_file)
 
         print(f"Successfully saved active payload to: {filename}")
-        lg.log(type="Here", logtext=f"{time.time()} - SUCESS: {filename}")
+        lg.log(type=TYPE, logtext=f"{time.time()} - SUCESS: {filename}")
 
     except Exception as e:
         print(
