@@ -9,11 +9,9 @@ def get_amount(amount_file):
     """
     try:
         with open(amount_file, "r") as file:
-            print(amount_file)
             lines = [line.rstrip("\n") for line in file]
-            print(lines)
 
-            amount = int(lines[0])
+            amount = int(lines[-1])
 
         print("The amount has been read.")
         lg.log(
@@ -45,7 +43,7 @@ def set_amount(amount_file, num=1):
 
         # Save the amount into the amount file
         with open(amount_file, "a") as am:
-            am.write(str(amount))
+            am.write(str(amount) + "\n")
 
         am.close()
 
