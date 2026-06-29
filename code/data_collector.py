@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import fw_here as fh
 import here_api as hr
+import ipma_api as ip
 import logger as lg
 import stcp_api as st
 import waze_api as wz
@@ -51,6 +52,12 @@ def set_env():
         os.makedirs(output_path, exist_ok=True)
         os.makedirs(profile_path, exist_ok=True)
 
+        # Create data folder if not exists
+        os.makedirs(os.path.join(output_path, "Waze"), exist_ok=True)
+        os.makedirs(os.path.join(output_path, "Here"), exist_ok=True)
+        os.makedirs(os.path.join(output_path, "STCP"), exist_ok=True)
+        os.makedirs(os.path.join(output_path, "IPMA"), exist_ok=True)
+
         # Set the output path for the waze api
         wz.set_output_path(output_path=output_path)
 
@@ -78,14 +85,20 @@ def fetch_data():
         amount = fh.get_amount(amount_file)
 
         with ThreadPoolExecutor(max_workers=4) as exec:
+            # Set the WAZE API
             exec.submit(wz.fetch_waze_data, profile_path)  # Fetch waze traffic data
 
+            # Set the HERE API
             if amount >= 1:
                 exec.submit(
                     hr.fetch_here_data, output_path, here_key, amount_file
                 )  # Fetch here maps traffic data
 
+            # Set the STCP API
             exec.submit(st.fetch_stcp_data, output_path)  # Fetch stcp bus location data
+
+            # Set the IPMA data
+            exec.submit(ip.fetch_ipma_data, output_path)  # Fetch ipma weather data
 
         print("The Thread pool has been created.")
         lg.log(
