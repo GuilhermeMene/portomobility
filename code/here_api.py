@@ -2,42 +2,50 @@ import json
 import os
 import time
 
+import fw_here as fh
 import logger as lg
 import requests
 
 # Set the output parameters
 TYPE = "Here"
-OUTPUT_DIR = os.environ.get("PATH_DIR")
-print(OUTPUT_DIR)
-# OUTPUT_DIR = f"../Data/{TYPE}"
 # Coordinates
 LAT = 41.1668695
 LONG = -8.618076
 R = 10000
 
-try:
-    # Get the env variables
-    key = os.environ.get("HERE_KEY")
-    print(key)
-    URL = f"https://data.traffic.hereapi.com/v7/flow?in=circle:{LAT},{LONG};r={R}&locationReferencing=olr&apiKey={key}"
 
-    # Get response
-    response = requests.get(URL)
+def fetch_here_data(output_path, here_key, amount_file):
+    """
+    Function to get the here traffic data
+    """
+    print("Getting the HERE data...")
+    try:
+        URL = f"https://data.traffic.hereapi.com/v7/flow?in=circle:{LAT},{LONG};r={R}&locationReferencing=olr&apiKey={here_key}"
 
-    timestamp = int(time.time())
-    filename = os.path.join(OUTPUT_DIR, f"{TYPE}_{timestamp}.json")
+        # Get response
+        response = requests.get(URL)
 
-    if response.status_code == 200:
-        json_data = response.json()
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(json_data, f, indent=4, ensure_ascii=False)
+        timestamp = int(time.time())
+        filename = os.path.join(output_path, TYPE, f"{TYPE}_{timestamp}.json")
 
-    print(f"Successfully saved active payload to: {filename}")
-    lg.log(type="Here", logtext=f"SUCESS: {filename}")
+        print(response)
+        if response.status_code == 200:
+            json_data = response.json()
+            print(json_data)
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(json_data, f, indent=4, ensure_ascii=False)
 
-except Exception as e:
-    print(f"Intercepted API call but server returned status: {response.status_code}")
-    lg.log(
-        type=TYPE,
-        logtext=f"ERROR: Error getting the reponse code: {response.status_code}",
-    )
+        # Update the API calls remaining
+        fh.set_amount(amount_file=amount_file)
+
+        print(f"Successfully saved active payload to: {filename}")
+        lg.log(type="Here", logtext=f"{time.time()} - SUCESS: {filename}")
+
+    except Exception as e:
+        print(
+            f"Intercepted API call but server returned status: {response.status_code}, Error message: {e}"
+        )
+        lg.log(
+            type=TYPE,
+            logtext=f"{time.time()} - ERROR: Error getting the reponse code: {response.status_code}. Error message: {e}",
+        )
