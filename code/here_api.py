@@ -28,7 +28,6 @@ def fetch_here_data(output_path, here_key, amount_file):
         timestamp = int(time.time())
         filename = os.path.join(output_path, TYPE, f"{TYPE}_{timestamp}.json")
 
-        print(response)
         if response.status_code == 200:
             json_data = response.json()
             with open(filename, "w", encoding="utf-8") as f:
