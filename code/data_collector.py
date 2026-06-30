@@ -23,8 +23,6 @@ except Exception as e:
         logtext=f"{time.time()} - ERROR: The environment path cannot be defined. Error message: {e}",
     )
 
-path = "/home/gmap/Documents/Projects/Datascience/Porto/portomobility/.env"
-
 
 # Set the environment
 def set_env():
@@ -38,7 +36,7 @@ def set_env():
     global amount_file
 
     try:
-        with open(path, "r") as file:
+        with open(sys.argv[1], "r") as file:
             # Stripping the lines by the new line char
             lines = [line.rstrip("\n") for line in file]
 
